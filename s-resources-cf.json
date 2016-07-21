@@ -1,8 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "The AWS CloudFormation template for this Serverless application's resources outside of Lambdas and Api Gateway",
-  "Parameters": {
-  },
   "Resources": {
     "IamRoleLambda": {
       "Type": "AWS::IAM::Role",
@@ -41,6 +39,15 @@
                 "logs:PutLogEvents"
               ],
               "Resource": "arn:aws:logs:${region}:*:*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                 "s3:putObject"
+              ],
+              "Resource": {
+                "Fn::Join": [ ":", [ "arn:aws:s3::", { "Ref": "S3Bucket"} ] ]
+              }
             }
           ]
         },
@@ -49,6 +56,13 @@
             "Ref": "IamRoleLambda"
           }
         ]
+      }
+    },
+    "S3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "AccessControl": "PublicRead",
+        "BucketName": "${project}-${stage}"
       }
     }
   },
