@@ -1,1 +1,34 @@
-{}
+{
+  "body": {
+    "csp-report": {
+      "document-uri": "https://example.com/foo/bar",
+      "referrer": "https://www.google.com/",
+      "violated-directive": "default-src self",
+      "original-policy": "default-src self; report-uri /csp-hotline.php",
+      "blocked-uri": "http://evilhackerscripts.com"
+    }
+  },
+  "path": "/receive_csp_report",
+  "method": "POST",
+  "sourceIp": "192.168.161.126",
+  "requestId": "9b805edf-adaa-21e6-a017-a5ec68950398",
+  "headers": {
+    "Accept": "*/*",
+    "CloudFront-Forwarded-Proto": "https",
+    "CloudFront-Is-Desktop-Viewer": "true",
+    "CloudFront-Is-Mobile-Viewer": "false",
+    "CloudFront-Is-SmartTV-Viewer": "false",
+    "CloudFront-Is-Tablet-Viewer": "false",
+    "CloudFront-Viewer-Country": "GB",
+    "Content-Type": "application/json",
+    "Host": "example.execute-api.eu-west-1.amazonaws.com",
+    "User-Agent": "curl/7.43.0",
+    "Via": "1.1 fe2de569df63792542eb5a7cf3cff257.cloudfront.net (CloudFront)",
+    "X-Amz-Cf-Id": "AUdEQ45jcyLEO93bvkA9rLpL7a40TuIjPj0dgDiUJ6eAmsHE03aJHg==",
+    "X-Forwarded-For": "192.168.161.126, 54.239.166.144",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https"
+  },
+  "params": "{}",
+  "query": "{}"
+}
