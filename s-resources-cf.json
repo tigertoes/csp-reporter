@@ -67,6 +67,12 @@
     }
   },
   "Outputs": {
+    "S3BucketArn": {
+      "Description": "ARN of the S3 Bucket",
+      "Value": {
+        "Fn::Join": [ ":", [ "arn:aws:s3::", { "Ref": "S3Bucket"} ] ]
+      }
+    },
     "IamRoleArnLambda": {
       "Description": "ARN of the lambda IAM role",
       "Value": {
