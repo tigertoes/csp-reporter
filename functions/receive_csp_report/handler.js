@@ -5,7 +5,7 @@ var bucket
 if(process.env.SERVERLESS_TEST) {
   var AWSMock = require('mock-aws-s3');
   var s3 = AWSMock.S3({
-    params: { Bucket: 'receive_csp_report' }
+    params: { Bucket: 'test_report_bucket' }
   });
 } else {
   var AWS = require('aws-sdk');
