@@ -10,7 +10,10 @@
     "url": "git://github.com/"
   },
   "dependencies": {
-    "aws-sdk": "^2.4.9",
+    "aws-sdk": "^2.4.9"
+  },
+  "devDependencies": {
+    "mock-aws-s3": "^2.3.0",
     "serverless-test-plugin": "^0.2.4"
   }
 }
