@@ -43,10 +43,10 @@
             {
               "Effect": "Allow",
               "Action": [
-                 "s3:putObject"
+                 "s3:PutObject"
               ],
               "Resource": {
-                "Fn::Join": [ ":", [ "arn:aws:s3::", { "Ref": "S3Bucket"} ] ]
+                "Fn::Join": [ "", [ "arn:aws:s3:::", { "Ref": "S3Bucket"}, "/*" ] ]
               }
             }
           ]
