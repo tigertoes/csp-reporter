@@ -1,14 +1,23 @@
 'use strict';
 
+var AWS = require('aws-sdk');
+var s3  = new AWS.S3({ params: { Bucket: process.env.S3_BUCKET_NAME } });
+
 module.exports.handler = function(event, context, cb) {
+
   event.headers = JSON.parse(event.headers);
-  //event.requestId = context.awsRequestId;
+  var payload = {
+    Key: event.requestId,
+    Body: JSON.stringify(event),
+    ContentType: 'application/json'
+  };
 
-  console.log(JSON.stringify(context));
-  console.log(JSON.stringify(event));
-
-  // 204 is a blank response
-  return cb(null, {
-    message: 'success'
+  s3.putObject(payload, function(err, data) {
+    if(err) {
+      console.error(err, err.stack);
+      return cb(err, 'Something went wrong!');
+    }
+    return cb(null, { message: 'success' });
   });
+
 };
