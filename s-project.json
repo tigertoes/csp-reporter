@@ -1,5 +1,7 @@
 {
   "name": "csp-reporter",
   "custom": {},
-  "plugins": []
+  "plugins": [
+    "serverless-test-plugin"
+  ]
 }

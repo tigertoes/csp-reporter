@@ -9,5 +9,8 @@
     "type": "git",
     "url": "git://github.com/"
   },
-  "dependencies": {}
+  "dependencies": {
+    "aws-sdk": "^2.4.9",
+    "serverless-test-plugin": "^0.2.4"
+  }
 }
