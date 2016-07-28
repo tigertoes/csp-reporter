@@ -14,6 +14,10 @@ S3.
 ### `generate_csp_report`
 Aggregates reporting and generates output
 
+### `receive_hpkp_report`
+Identical to CSP report collector, but instead is used for HTTPS Public Key
+Pinning reports.
+
 ## Testing
 Local running testing can be done by calling:
 
