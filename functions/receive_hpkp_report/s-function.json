@@ -1,0 +1,53 @@
+{
+  "name": "receive_hpkp_report",
+  "runtime": "nodejs4.3",
+  "description": "Content Security Policy report collector",
+  "customName": false,
+  "customRole": false,
+  "handler": "handler.handler",
+  "timeout": 6,
+  "memorySize": 128,
+  "authorizer": {},
+  "custom": {
+    "excludePatterns": []
+  },
+  "endpoints": [
+    {
+      "path": "receive_hpkp_report",
+      "method": "POST",
+      "type": "AWS",
+      "authorizationType": "none",
+      "authorizerFunction": false,
+      "apiKeyRequired": false,
+      "requestParameters": {
+      },
+      "requestTemplates": {
+        "application/csp-report": "$${requestTemplate}",
+        "application/json": "$${requestTemplate}",
+        "application/x-www-form-urlencoded": "$${requestTemplate}"
+      },
+      "responses": {
+        "400": {
+          "statusCode": "400"
+        },
+        "default": {
+          "statusCode": "204",
+          "responseParameters": {},
+          "responseModels": {},
+          "responseTemplates": {}
+        }
+      }
+    }
+  ],
+  "events": [],
+  "environment": {
+    "SERVERLESS_PROJECT": "${project}",
+    "SERVERLESS_STAGE": "${stage}",
+    "SERVERLESS_REGION": "${region}",
+    "S3_BUCKET_NAME": "${s3BucketName}"
+  },
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
+}
