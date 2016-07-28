@@ -1,7 +1,8 @@
 'use strict';
 
+var BASE_PATH = 'csp/';
+
 // Bootstrap for local testing
-var bucket
 if(process.env.SERVERLESS_TEST) {
   var AWSMock = require('mock-aws-s3');
   var s3 = AWSMock.S3({
@@ -14,11 +15,9 @@ if(process.env.SERVERLESS_TEST) {
 
 
 module.exports.handler = function(event, context, cb) {
-
   event.headers = JSON.parse(event.headers);
-
   var payload = {
-    Key: event.requestId,
+    Key: BASE_PATH + event.requestId + '.json',
     Body: JSON.stringify(event),
     ContentType: 'application/json'
   };
