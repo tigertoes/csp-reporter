@@ -93,12 +93,9 @@
   },
   "Outputs": {
     "CSPKinesisStreamArn": {
-      "Description": "ARN for the CSP Kinesis Stream",
+      "Description": "Name of the CSP Kinesis Stream",
       "Value":{
-        "Fn::GetAtt": [
-          "CSPKinesisStream",
-          "Arn"
-        ]
+        "Ref": "CSPKinesisStream"
       }
     },
     "S3BucketName": {
