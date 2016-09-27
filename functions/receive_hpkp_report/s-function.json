@@ -19,8 +19,7 @@
       "authorizationType": "none",
       "authorizerFunction": false,
       "apiKeyRequired": false,
-      "requestParameters": {
-      },
+      "requestParameters": {},
       "requestTemplates": {
         "application/csp-report": "$${requestTemplate}",
         "application/json": "$${requestTemplate}",
