@@ -43,7 +43,8 @@
     "SERVERLESS_PROJECT": "${project}",
     "SERVERLESS_STAGE": "${stage}",
     "SERVERLESS_REGION": "${region}",
-    "S3_BUCKET_NAME": "${s3BucketName}"
+    "S3_BUCKET_NAME": "${s3BucketName}",
+    "KINESIS_STREAM": "${cspKinesisStream}"
   },
   "vpc": {
     "securityGroupIds": [],
