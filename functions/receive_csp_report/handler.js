@@ -1,33 +1,29 @@
 'use strict';
 
-var BASE_PATH = 'csp/';
-
-// Bootstrap for local testing
-if(process.env.SERVERLESS_TEST) {
-  var AWSMock = require('mock-aws-s3');
-  var s3 = AWSMock.S3({
-    params: { Bucket: 'test_report_bucket' }
-  });
-} else {
-  var AWS = require('aws-sdk');
-  var s3  = new AWS.S3({ params: { Bucket: process.env.S3_BUCKET_NAME } });
-}
-
+var AWS = require('aws-sdk');
+var firehose = new AWS.Firehose({
+  params: {
+    DeliveryStreamName: process.env.FIREHOSE_STREAM
+  }
+});
 
 module.exports.handler = function(event, context, cb) {
   event.headers = JSON.parse(event.headers);
-  var payload = {
-    Key: BASE_PATH + event.requestId + '.json',
-    Body: JSON.stringify(event),
-    ContentType: 'application/json'
-  };
+  event.time    = new Date();
 
-  s3.putObject(payload, function(err, data) {
+  var payload = JSON.stringify(event) + "\n";
+
+  firehose.putRecord({
+    Record: {
+      Data: payload,
+    }
+  }, function(err, data){
     if(err) {
       console.error(err, err.stack);
-      return cb(err, 'Something went wrong!');
+      return cb(err, 'Could not write data!');
+    } else {
+      return cb(null, { message: 'success' });
     }
-    return cb(null, { message: 'success' });
   });
 
 };

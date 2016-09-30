@@ -1,123 +1,168 @@
 {
-  "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "The AWS CloudFormation template for this Serverless application's resources outside of Lambdas and Api Gateway",
-  "Resources": {
-    "IamRoleLambda": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "Service": [
-                  "lambda.amazonaws.com"
-                ]
-              },
-              "Action": [
-                "sts:AssumeRole"
-              ]
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "CSP Reporter infrastructure for ${stage}",
+    "Resources": {
+        "IamRoleLambda": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": [
+                                "lambda.amazonaws.com"
+                            ]
+                        },
+                        "Action": [
+                            "sts:AssumeRole"
+                        ]
+                    }]
+                },
+                "Path": "/"
             }
-          ]
         },
-        "Path": "/"
-      }
-    },
-    "IamPolicyLambda": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyName": "${stage}-${project}-lambda",
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Resource": "arn:aws:logs:${region}:*:*"
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "kinesis:*"
-              ],
-              "Resource": {
-                "Fn::GetAtt": ["CSPKinesisStream", "Arn"]
-              }
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "s3:PutObject"
-              ],
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:aws:s3:::",
-                    {
-                      "Ref": "S3Bucket"
+        "IamPolicyLambda": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "${stage}-${project}-lambda",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                        "Effect": "Allow",
+                        "Action": [
+                            "logs:CreateLogGroup",
+                            "logs:CreateLogStream",
+                            "logs:PutLogEvents"
+                        ],
+                        "Resource": "arn:aws:logs:${region}:*:*"
+                    }, {
+                        "Effect": "Allow",
+                        "Action": [
+                            "firehose:*"
+                        ],
+                        "Resource": [
+                            "arn:aws:firehose:${region}:*:*"
+                        ]
+                    }]
+                },
+                "Roles": [{
+                    "Ref": "IamRoleLambda"
+                }]
+            }
+        },
+        "FirehoseRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": "firehose.amazonaws.com"
+                        },
+                        "Action": "sts:AssumeRole",
+                        "Condition": {
+                            "StringEquals": {
+                                "sts:ExternalId": {
+                                    "Ref": "AWS::AccountId"
+                                }
+                            }
+                        }
+                    }]
+                }
+            }
+        },
+        "FirehosePolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "${stage}-${project}-firehose",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                        "Effect": "Allow",
+                        "Action": [
+                            "s3:AbortMultipartUpload",
+                            "s3:GetBucketLocation",
+                            "s3:GetObject",
+                            "s3:ListBucket",
+                            "s3:ListBucketMultipartUploads",
+                            "s3:PutObject"
+                        ],
+                        "Resource": {
+                            "Fn::Join": [
+                                "", [
+                                    "arn:aws:s3:::", {
+                                        "Ref": "S3Bucket"
+                                    },
+                                    "/*"
+                                ]
+                            ]
+                        }
+                    }, {
+                        "Effect": "Allow",
+                        "Action": [
+                            "logs:PutLogEvents"
+                        ],
+                        "Resource": "arn:aws:logs:${region}:*:*"
+                    }]
+                },
+                "Roles": [{
+                    "Ref": "FirehoseRole"
+                }]
+            }
+        },
+        "FirehoseStream": {
+            "Type": "AWS::KinesisFirehose::DeliveryStream",
+            "Properties": {
+                "DeliveryStreamName": "${project}-${stage}",
+                "S3DestinationConfiguration": {
+                    "BucketARN": {
+
+                        "Fn::Join": [
+                            "", [
+                                "arn:aws:s3:::", {
+                                    "Ref": "S3Bucket"
+                                }
+                            ]
+                        ]
+
                     },
-                    "/*"
-                  ]
-                ]
-              }
+                    "BufferingHints": {
+                        "IntervalInSeconds": 900,
+                        "SizeInMBs": 5
+                    },
+                    "Prefix": "${project}-${stage}-",
+                    "CompressionFormat": "GZIP",
+                    "RoleARN": {
+                        "Fn::GetAtt": ["FirehoseRole", "Arn"]
+                    }
+                }
             }
-          ]
         },
-        "Roles": [
-          {
-            "Ref": "IamRoleLambda"
-          }
-        ]
-      }
+        "S3Bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "AccessControl": "PublicRead",
+                "BucketName": "${project}-${stage}"
+            }
+        }
     },
-    "CSPKinesisStream": {
-      "Type": "AWS::Kinesis::Stream",
-      "Properties": {
-        "Name": "${project}-${stage}",
-        "ShardCount": "1"
-      }
-    },
-    "S3Bucket": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "AccessControl": "PublicRead",
-        "BucketName": "${project}-${stage}"
-      }
+    "Outputs": {
+        "FirehoseStreamName": {
+            "Description": "Name of the CSP Firehose Stream",
+            "Value": {
+                "Ref": "FirehoseStream"
+            }
+        },
+        "IamRoleArnLambda": {
+            "Description": "ARN of the lambda IAM role",
+            "Value": {
+                "Fn::GetAtt": [
+                    "IamRoleLambda",
+                    "Arn"
+                ]
+            }
+        }
     }
-  },
-  "Outputs": {
-    "CSPKinesisStreamName": {
-      "Description": "Name of the CSP Kinesis Stream",
-      "Value":{
-        "Ref": "CSPKinesisStream"
-      }
-    },
-    "CSPKinesisStreamArn": {
-      "Description": "ARN for the CSP Kinesis Stream",
-      "Value":{
-        "Fn::GetAtt": ["CSPKinesisStream", "Arn"]
-      }
-    },
-    "S3BucketName": {
-      "Description": "Name of the S3 Bucket",
-      "Value": {
-        "Ref": "S3Bucket"
-      }
-    },
-    "IamRoleArnLambda": {
-      "Description": "ARN of the lambda IAM role",
-      "Value": {
-        "Fn::GetAtt": [
-          "IamRoleLambda",
-          "Arn"
-        ]
-      }
-    }
-  }
 }

@@ -44,7 +44,7 @@
     "SERVERLESS_STAGE": "${stage}",
     "SERVERLESS_REGION": "${region}",
     "S3_BUCKET_NAME": "${s3BucketName}",
-    "KINESIS_STREAM": "${cspKinesisStream}"
+    "FIREHOSE_STREAM": "${firehoseStreamName}"
   },
   "vpc": {
     "securityGroupIds": [],
