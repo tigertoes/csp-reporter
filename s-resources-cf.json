@@ -43,7 +43,7 @@
             {
               "Effect": "Allow",
               "Action": [
-                "kinesis:Put*"
+                "kinesis:*"
               ],
               "Resource": {
                 "Fn::GetAtt": ["CSPKinesisStream", "Arn"]
@@ -92,10 +92,16 @@
     }
   },
   "Outputs": {
-    "CSPKinesisStreamArn": {
+    "CSPKinesisStreamName": {
       "Description": "Name of the CSP Kinesis Stream",
       "Value":{
         "Ref": "CSPKinesisStream"
+      }
+    },
+    "CSPKinesisStreamArn": {
+      "Description": "ARN for the CSP Kinesis Stream",
+      "Value":{
+        "Fn::GetAtt": ["CSPKinesisStream", "Arn"]
       }
     },
     "S3BucketName": {
