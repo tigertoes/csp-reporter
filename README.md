@@ -11,13 +11,6 @@ make any attempt to validate the payload and attempts to respond to multiple kno
 types. The payload, along with headers from the request are written out as an object to
 S3.
 
-### `generate_csp_report`
-Aggregates reporting and generates output
-
-### `receive_hpkp_report`
-Identical to CSP report collector, but instead is used for HTTPS Public Key
-Pinning reports.
-
 ## Testing
 Local running testing can be done by calling:
 
@@ -32,6 +25,7 @@ Assuming you have valid AWS credentials set in your environment, and serverless 
 ## TODO
 * Reporting services
 * CloudWatch Metrics support
+* Migrate to Serverless 1.x
 
 ## License
 Copyright 2016 Tony Tiger.
